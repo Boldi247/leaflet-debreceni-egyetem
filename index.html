@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+    integrity="sha512-
+    hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ
+    ==" crossorigin=
+    ""/>
+    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js" integrity="sha512-
+    BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ
+    ==" crossorigin=
+    ""></script>
+    <link rel="stylesheet" href="index.css">
+
+    <script src="https://cdn.maptiler.com/maptiler-sdk-js/v1.1.1/maptiler-sdk.umd.js"></script>
+    <link href="https://cdn.maptiler.com/maptiler-sdk-js/v1.1.1/maptiler-sdk.css" rel="stylesheet" />
+    <script src="https://cdn.maptiler.com/leaflet-maptilersdk/v1.0.0/leaflet-maptilersdk.js"></script>
+</head>
+<body>
+    <div id="map" style="width: 100vw; height: 100vh;"></div>
+
+    <script>
+
+        function polygonColor(numberOfStudents) {
+            if (numberOfStudents < 1000) {
+                return "#00ff00";
+            } else if (numberOfStudents < 2000) {
+                return "#ffff00";
+            } else if (numberOfStudents < 3000) {
+                return "#ff8000";
+            } else if (numberOfStudents < 4000) {
+                return "#ff0000";
+            } else {
+                return "#800000";
+            }
+        }
+        //Poligonok, körök és markerek definiálása (adatok a DE honlapjáról, koordináták: geojson.io)
+        const nagyerdeiCampus = L.polygon([
+        [
+              47.556289044568786,
+              21.61466934769362,
+            ],
+            [
+              47.55308016641598,
+              21.62011743572191,
+            ],
+            [
+              47.55165393527355,
+              21.62084384745893,
+            ],
+            [
+              47.551631650104014,
+              21.62176837148752,
+            ],
+            [
+              47.55074023554994,
+              21.62176837148752,
+            ],
+            [
+              47.55096309060988,
+              21.623155157530988,
+            ],
+            [
+              47.55185450137341,
+              21.622593839370268,
+            ],
+            [
+              47.55446179082071,
+              21.6244428874287,
+            ],
+            [
+              47.55615534523582,
+              21.627678721530657,
+            ],
+            [
+              47.55619991171807,
+              21.630320218755315,
+            ],
+            [
+              47.56114655563755,
+              21.630584368478708,
+            ],
+            [
+              47.56119111787444,
+              21.622527801939754,
+            ],
+            [
+              47.55996564254622,
+              21.620018379576123,
+            ],
+            [
+              47.556289044568786,
+              21.61466934769362,
+            ]
+            ]);
+        const kassaiCampus = L.polygon([
+          [
+            47.545185136932645,
+              21.637621933920997,
+            ],
+            [
+              47.543980494758415,
+              21.638806799224568,
+            ],
+            [
+              47.54367439274611,
+              21.638543495823257,
+            ],
+            [
+              47.54290419267886,
+              21.637987633088414,
+            ],
+            [
+              47.54254871190807,
+              21.638938450924087,
+            ],
+            [
+              47.54154150330112,
+              21.638163168689715,
+            ],
+            [
+              47.5408107712189,
+              21.6402842238617,
+            ],
+            [
+              47.54469143447159,
+              21.643195189235286,
+            ],
+            [
+              47.545668960833154,
+              21.64016720012711,
+            ],
+            [
+              47.546024420445235,
+              21.63958208145894,
+            ],
+            [
+              47.545185136932645,
+              21.637621933920997,
+            ]
+          ]
+        );
+        const otemetoCampus = L.polygon(
+          [
+            [
+              47.53777269479792,
+              21.64061107992879,
+            ],
+            [
+              47.537104449437436,
+              21.640165276692244,
+            ],
+            [
+              47.536234697490954,
+              21.64024461455716,
+            ],
+            [
+              47.53636477861147,
+              21.641461128471775,
+            ],
+            [
+              47.53624745055615,
+              21.642526522645653,
+            ],
+            [
+              47.53721667444398,
+              21.642817428146344,
+            ],
+            [
+              47.53742582040675,
+              21.641589580251065,
+            ],
+            [
+              47.53777269479792,
+              21.64061107992879,
+            ]
+          ]
+        );
+        const boszormenyiCampus = L.polygon(
+          [
+            [
+              47.548897285179606,
+              21.60539029445593,
+            ],
+            [
+              47.54765110216667,
+              21.60535073126033,
+            ],
+            [
+              47.54758879223792,
+              21.609544429971777,
+            ],
+            [
+              47.55162098203863,
+              21.609742245949747,
+            ],
+            [
+              47.55472734549261,
+              21.60738749341087,
+            ],
+            [
+              47.553049877036585,
+              21.60188763806144,
+            ],
+            [
+              47.552961058479184,
+              21.59893977534375,
+            ],
+            [
+              47.54976349015641,
+              21.59951881980558,
+            ],
+            [
+              47.549816784560335,
+              21.606427873052013,
+            ],
+            [
+              47.54890188977046,
+              21.606441033153487,
+            ],
+            [
+              47.548897285179606,
+              21.60539029445593,
+            ]
+          ]
+        );
+        const bemteriCapmus = L.polygon([
+            [
+              47.544347944314325,
+              21.622510446652484,
+            ],
+            [
+              47.54424452841735,
+              21.622631953428993,
+            ],
+            [
+              47.542529221191785,
+              21.622748177302583,
+            ],
+            [
+              47.54257201540145,
+              21.624650022497292,
+            ],
+            [
+              47.543866523746374,
+              21.62518887863564,
+            ],
+            [
+              47.54470454929282,
+              21.623281750537103,
+            ],
+            [
+              47.544347944314325,
+              21.622510446652484,
+            ]
+        ]);
+        const btk = L.circle([
+          47.55362783789607,
+          21.621560139471086
+        ], {
+            color: polygonColor(2659),
+            fillColor: polygonColor(2659),
+            fillOpacity: 0.5,
+            radius: 10
+        });
+        const ik = L.circle([
+          47.542182554582695,
+          21.639674649536744,
+        ], {
+            color: polygonColor(2057),
+            fillColor: polygonColor(2057),
+            fillOpacity: 0.5,
+            radius: 50
+        });
+        const mk = L.circle(
+          [
+            47.537010157927824,
+            21.64096129163218,
+          ], {
+            color: polygonColor(2721),
+            fillColor: polygonColor(2721),
+            fillOpacity: 0.5,
+            radius: 50
+        });      
+        const zk = L.circle(
+          [
+            47.551117912059084,
+            21.622251370138997,
+          ], {
+            color: polygonColor(203),
+            fillColor: polygonColor(203),
+            fillOpacity: 0.5,
+            radius: 40
+        });
+        const ajk = L.circle(
+          [
+            47.54335157362004,
+            21.641788744948116,
+          ], {
+            color: polygonColor(1818),
+            fillColor: polygonColor(1818),
+            fillOpacity: 0.5,
+            radius: 40
+          }
+        );
+        const aok = L.circle(
+          [
+            47.556970961971615,
+            21.627308191716907,
+          ], {
+            color: polygonColor(3491),
+            fillColor: polygonColor(3491),
+            fillOpacity: 0.5,
+            radius: 40
+          }
+        )
+        const gtk = L.circle(
+          [
+            47.55257014850116,
+            21.60843308938334,
+          ], {
+            color: polygonColor(4347),
+            fillColor: polygonColor(4347),
+            fillOpacity: 0.5,
+            radius: 40
+          }
+        );
+        const etk = L.circle(
+          [
+            47.54239176449798,
+            21.641059136823287,
+          ], {
+            color: polygonColor(2585),
+            fillColor: polygonColor(2585),
+            fillOpacity: 0.5,
+            radius: 40
+          }
+        );
+        const fok = L.circle(
+          [
+            47.55810792390457,
+            21.625796863948807,
+          ], {
+            color: polygonColor(602),
+            fillColor: polygonColor(602),
+            fillOpacity: 0.5,
+            radius: 35
+          }
+        );
+        const gygyk = L.circle(
+          [
+            47.66774151996728,
+            21.50748882873617,
+          ], {
+            color: polygonColor(1344),
+            fillColor: polygonColor(1344),
+            fillOpacity: 0.5,
+            radius: 50
+          }
+        );
+        const gytk = L.circle(
+          [
+            47.558886468164076,
+            21.62484288501696,
+          ], {
+            color: polygonColor(513),
+            fillColor: polygonColor(513),
+            fillOpacity: 0.5,
+            radius: 30
+          }
+        );     
+        const mek = L.circle(
+          [
+            47.54913393844947,
+            21.608767931763254,
+          ], {
+            color: polygonColor(1295),
+            fillColor: polygonColor(1295),
+            fillOpacity: 0.5,
+            radius: 60
+          }
+        );
+        const ttk_fizika = L.circle(
+          [
+            47.54319788745522,
+            21.62469151478149,
+          ], {
+            color: polygonColor(2182),
+            fillColor: polygonColor(2182),
+            fillOpacity: 0.5,
+            radius: 50
+          }
+        );
+        const ttk_foepulet = L.circle([
+          47.55362783789607,
+          21.621560139471086
+        ], {
+            color: polygonColor(2182),
+            fillColor: polygonColor(2182),
+            fillOpacity: 0.5,
+            radius: 40
+        });
+        //Kollégiumok
+        const kollegiumIkon = L.icon({
+          iconUrl: "./images/hostel.png",
+          iconSize: [38, 38],
+          iconAnchor: [19, 38],
+          popupAnchor: [0, -38]
+        });
+        const campusHotel = L.marker(
+          [
+            47.54454895052501,
+            21.64029073357466,
+          ], {icon: kollegiumIkon});
+        const aranySandor = L.marker(
+          [
+            47.55153537646959,
+            21.608851202938922,
+          ], {icon: kollegiumIkon});
+        const borsosJozsef = L.marker(
+          [
+            47.53672042269474,
+            21.640386899677026,
+          ], {icon: kollegiumIkon});
+        const hajduboszormenyi = L.marker(
+          [
+            47.66767269600251,
+            21.50741719646831,
+          ], {icon: kollegiumIkon});
+        const kossuthKollegiumok = L.marker(
+          [
+            47.55525989844972,
+            21.622993180140497,
+          ], {icon: kollegiumIkon});
+        const marku2 = L.marker(
+          [
+            47.55935026411737,
+            21.623577385112696,
+          ], {icon: kollegiumIkon});
+        const marku3 = L.marker(
+          [
+            47.561958918262064,
+            21.624276609600884,
+          ], {icon: kollegiumIkon});
+        const nyiregy = L.marker(
+          [
+            47.95591666709814,
+            21.705399180916004,
+          ], {icon: kollegiumIkon});
+        const sportkollegium = L.marker(
+          [
+            47.55711116164662,
+            21.614938250132866,
+          ], {icon: kollegiumIkon});
+        const szolnoki = L.marker(
+          [
+            47.16959756002984,
+            20.200009121529575,
+          ], {icon: kollegiumIkon});
+        const tiszaIstvan = L.marker(
+          [
+            47.53957337105416,
+            21.622248203564112,
+          ], {icon: kollegiumIkon});
+        const vamospercsi = L.marker(
+          [
+            47.531118388667664,
+            21.672240018080544,
+          ], {icon: kollegiumIkon});
+        const veresPeter = L.marker(
+          [
+            47.550659263923166,
+            21.60880429338701,
+          ], {icon: kollegiumIkon});
+        const weinerLeo = L.marker(
+          [
+            47.55119955340382,
+            21.622180287638912,
+          ], {icon: kollegiumIkon});
+          
+          //-----------
+
+        const boszormenyiCampusTerkep = L.imageOverlay(
+          "./images/campus_terkep.jpg",
+          [
+            [
+              47.54793730732246,
+              21.61036370977567,
+            ],
+            [
+              47.554321787821266,
+              21.59840437917211,
+            ]
+          ], {
+            opacity: 0.8,
+            errorOverlayUrl: "https://cdn-icons-png.flaticon.com/512/110/110686.png",
+            alt: "Böszörményi úti Campus térkép",
+            interactive: true
+          }
+        );
+
+        const campusok = L.layerGroup([nagyerdeiCampus, kassaiCampus, otemetoCampus, boszormenyiCampus, bemteriCapmus]);
+        const karok = L.layerGroup([btk, ik, mk, zk, ajk, aok, gtk, etk, fok, gygyk, gytk, mek, ttk_fizika, ttk_foepulet]);
+        const kollegiumok = L.layerGroup([campusHotel, aranySandor, borsosJozsef, hajduboszormenyi, kossuthKollegiumok, marku2, marku3, nyiregy, sportkollegium, szolnoki, tiszaIstvan, vamospercsi, veresPeter, weinerLeo]);
+        const terkepek = L.layerGroup([boszormenyiCampusTerkep]);
+
+        const overlays = {
+          "Capmusok": campusok,
+          "Karok": karok,
+          "Kollégiumok": kollegiumok,
+          "Térképek": terkepek
+        }
+
+        var mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
+	      var mbUrl = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
+
+        var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+          attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        });
+
+        const key = 'enrIIlynPiY09Z5XCdsg';
+        const streets2 = L.maptilerLayer({
+        apiKey: key,
+        style: "streets-v2",
+      })
+
+        const satellite = L.maptilerLayer({
+        apiKey: key,
+        style: "satellite",
+      })
+
+        const maps = {
+          "OpenStreetMap": osm,
+          "Streets V2": streets2,
+          "Satellite": satellite
+        }
+
+        var map = L.map('map', {
+          center: [
+            47.53836590672012,
+            21.625128825463037,
+          ],
+          zoom: 14, layers: [osm, campusok]
+        });
+
+        //popups
+        nagyerdeiCampus.bindPopup("<b>Nagyerdei Campus</b><br>Debreceni Egyetem");
+        kassaiCampus.bindPopup("<b>Kassai Campus</b><br>Debreceni Egyetem");
+        otemetoCampus.bindPopup("<b>Ótemetői Campus</b><br>Debreceni Egyetem");
+        boszormenyiCampus.bindPopup("<b>Böszörményi úti Campus</b><br>Debreceni Egyetem");
+        bemteriCapmus.bindPopup("<b>Bem téri Campus</b><br>Debreceni Egyetem");
+
+        btk.bindPopup("<b>Bölcsészettudományi Kar</b><br>2659 hallgató");
+        ik.bindPopup("<b>Informatikai Kar</b><br>2057 hallgató");
+        mk.bindPopup("<b>Műszaki Kar</b><br>2721 hallgató");
+        zk.bindPopup("<b>Zeneművészeti Kar</b><br>203 hallgató");
+        ajk.bindPopup("<b>Állam- és Jogtudományi Kar</b><br>1818 hallgató");
+        aok.bindPopup("<b>Általános Orvostudományi Kar</b><br>3491 hallgató");
+        gtk.bindPopup("<b>Gazdaságtudományi Kar</b><br>4347 hallgató");
+        etk.bindPopup("<b>Egészségtudományi Kar</b><br>2585 hallgató");
+        fok.bindPopup("<b>Fogorvostudományi Kar</b><br>602 hallgató");
+        gygyk.bindPopup("<b>Gyermeknevelési és Gyógypedagógiai Kar</b><br>1344 hallgató");
+        gytk.bindPopup("<b>Gyógyszerésztudományi Kar</b><br>513 hallgató");
+        mek.bindPopup("<b>Mezőgazdaság-, Élelmiszertudományi és Környezetgazdálkodási Kar</b><br>1295 hallgató");
+        ttk_fizika.bindPopup("<b>Természettudományi és Technológiai Kar (Fizika tanszék)</b><br>Összesen 2182 TTK hallgató");
+        ttk_foepulet.bindPopup("<b>Természettudományi és Technológiai Kar (Főépület)</b><br>Összesen 2182 TTK hallgató");
+
+        campusHotel.bindPopup("<b>Campus Hotel</b><br>Debreceni Egyetem");
+        aranySandor.bindPopup("<b>Arany Sándor Diákapartman</b><br>Debreceni Egyetem");
+        borsosJozsef.bindPopup("<b>Borsos József Kollégium</b><br>Debreceni Egyetem");
+        hajduboszormenyi.bindPopup("<b>Hajdúböszörményi Kollégium</b><br>Debreceni Egyetem");
+        kossuthKollegiumok.bindPopup("<b>Kossuth Lajos Kollégiumok</b><br>Kossuth Lajos I., II., III. kollégiumok<br>Debreceni Egyetem");
+        marku2.bindPopup("<b>Markusovszky Lajos II. Kollégium</b><br>Debreceni Egyetem");
+        marku3.bindPopup("<b>Markusovszky Lajos III. Kollégium</b><br>Debreceni Egyetem");
+        nyiregy.bindPopup("<b>Nyíregyházi Kollégium</b><br>Debreceni Egyetem");
+        sportkollegium.bindPopup("<b>Sportkollégium</b><br>Debreceni Egyetem");
+        szolnoki.bindPopup("<b>Szolnoki Kollégium</b><br>Debreceni Egyetem");
+        tiszaIstvan.bindPopup("<b>Tisza István Kollégium</b><br>Debreceni Egyetem");
+        vamospercsi.bindPopup("<b>Vámospércsi úti Kollégium</b><br>Debreceni Egyetem");
+        veresPeter.bindPopup("<b>Veres Péter Kollégium</b><br>Debreceni Egyetem");
+        weinerLeo.bindPopup("<b>Weiner Leó Kollégium</b><br>Debreceni Egyetem");
+        //------
+
+        const layerControl = L.control.layers(maps, overlays).addTo(map);
+
+    </script>
+</body>
+</html>
